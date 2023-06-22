@@ -1,12 +1,15 @@
-
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <cmath>
+#include "stb_image.h"
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 
 using namespace std;
-//este es el funcional.... NO LO BORRES
 
+// Función de devolución de llamada para cambiar el tamaño del framebuffer
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
@@ -14,27 +17,29 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 const char* vertexShaderSource = R"(
     #version 330 core
     layout (location = 0) in vec3 aPos;
-    layout (location = 1) in vec3 aColor;
+    layout (location = 1) in vec2 aTexCoord;
 
-    out vec3 color;
+    out vec2 TexCoord;
 
     uniform mat4 transform;
 
     void main()
     {
-        gl_Position = transform * vec4(aPos.x, aPos.y, aPos.z, 1.0);
-        color = aColor;
+        gl_Position = transform * vec4(aPos, 1.0);
+        TexCoord = aTexCoord;
     }
 )";
 
 const char* fragmentShaderSource = R"(
     #version 330 core
-    in vec3 color;
+    in vec2 TexCoord;
     out vec4 FragColor;
+
+    uniform sampler2D texture1;
 
     void main()
     {
-        FragColor = vec4(color, 1.0);
+        FragColor = texture(texture1, TexCoord);
     }
 )";
 
@@ -108,15 +113,15 @@ int main() {
     // Coordenadas y vértices del cubo
     float vertices[] = {
         // Cara frontal
-        -0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f, // Rojo
-         0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 0.0f, // Verde
-         0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f, // Azul
-        -0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 0.0f, // Amarillo
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // Inferior izquierdo
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // Inferior derecho
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // Superior derecho
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, // Superior izquierdo
         // Cara trasera
-        -0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 1.0f, // Magenta
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f, // Cian
-         0.5f,  0.5f, -0.5f,  0.5f, 0.5f, 0.5f, // Gris
-        -0.5f,  0.5f, -0.5f,  0.8f, 0.2f, 0.5f  // Rosa
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // Inferior izquierdo
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f, // Inferior derecho
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // Superior derecho
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f  // Superior izquierdo
     };
 
     // Índices de los triángulos que forman el cubo
@@ -154,11 +159,11 @@ int main() {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // Especificar los atributos de los vértices
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    // Especificar los atributos del color
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    // Especificar los atributos de las coordenadas de textura
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
     // Desenlazar el VAO
@@ -167,10 +172,52 @@ int main() {
     // Establecer la velocidad de rotación
     float rotationSpeed = 0.5f;
 
+    // Cargar la textura
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    // Establecer los parámetros de la textura
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Cargar la imagen de la textura
+    int width, height, channels;
+    string path = "plano.png";
+    const char* pathChar = &path[0];
+    stbi_set_flip_vertically_on_load(true);
+    unsigned char* ndata = stbi_load("plano.png", &width, &height, &channels, 0);
+    unsigned char* data = ndata;
+    if (data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+        cout << "IMAGEN LISTA" << endl;
+    }
+    else {
+        cout << "Failed to load texture" << endl;
+    }
+    stbi_image_free(data);
+
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 330");
+
+    bool STOP = true;
+
     // Bucle principal
     while (!glfwWindowShouldClose(window)) {
         // Actualizar lógica del juego
-
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+        ImGui::Begin("UI DEL JUEGO");
+        ImGui::Text("ROTACION");
         // Renderizar
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -181,36 +228,45 @@ int main() {
         int transformLoc = glGetUniformLocation(shaderProgram, "transform");
 
         // Incrementar el ángulo de rotación
-        float angle = glfwGetTime() * rotationSpeed;
+        float angle = static_cast<float>(glfwGetTime()) * rotationSpeed;
+
 
         // Matriz de rotación
-        float rotationMatrix[] = {
-            cos(angle), 0.0f, -sin(angle), 0.0f,
-            0.0f,       1.0f, 0.0f,        0.0f,
-            sin(angle), 0.0f, cos(angle),  0.0f,
-            0.0f,       0.0f, 0.0f,        1.0f
-        };
+        if (STOP) {
+            float cosAngle = cos(angle);
+            float sinAngle = sin(angle);
 
-        // Pasar la matriz de transformación al shader
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, rotationMatrix);
+            float rotationMatrix[16] = {
+                cosAngle, 0.0f, -sinAngle, 0.0f,
+                0.0f, 1.0f, 0.0f, 0.0f,
+                sinAngle, 0.0f, cosAngle, 0.0f,
+                0.0f, 0.0f, 0.0f, 1.0f
+            };
+
+            // Pasar la matriz de transformación al shader
+            glUniformMatrix4fv(transformLoc, 1, GL_FALSE, rotationMatrix);
+        }
+
 
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
 
-        // Intercambiar buffers y comprobar eventos
+        ImGui::Checkbox("DETENER", &STOP);
+
+        ImGui::End();
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-
-    // Limpiar los recursos
+    // Limpiar recursos
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
-    glDeleteProgram(shaderProgram);
 
     glfwTerminate();
     return 0;
 }
-
-
