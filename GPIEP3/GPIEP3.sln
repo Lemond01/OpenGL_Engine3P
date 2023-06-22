@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33712.159
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GPIEP3", "GPIEP3.vcxproj", "{140B3225-03A4-41E3-A231-A10DFF69F0EE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{140B3225-03A4-41E3-A231-A10DFF69F0EE}.Debug|x64.ActiveCfg = Debug|x64
+		{140B3225-03A4-41E3-A231-A10DFF69F0EE}.Debug|x64.Build.0 = Debug|x64
+		{140B3225-03A4-41E3-A231-A10DFF69F0EE}.Debug|x86.ActiveCfg = Debug|Win32
+		{140B3225-03A4-41E3-A231-A10DFF69F0EE}.Debug|x86.Build.0 = Debug|Win32
+		{140B3225-03A4-41E3-A231-A10DFF69F0EE}.Release|x64.ActiveCfg = Release|x64
+		{140B3225-03A4-41E3-A231-A10DFF69F0EE}.Release|x64.Build.0 = Release|x64
+		{140B3225-03A4-41E3-A231-A10DFF69F0EE}.Release|x86.ActiveCfg = Release|Win32
+		{140B3225-03A4-41E3-A231-A10DFF69F0EE}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C16C6A88-09DA-4153-B6D2-3C04E8039F44}
+	EndGlobalSection
+EndGlobal
