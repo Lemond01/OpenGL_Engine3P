@@ -1,0 +1,10 @@
+^F:\ESCUELA\SERGIO\PROGRA 3\PARCIAL3\GLFW-3.3.8\CONSTRC\CMAKEFILES\FBE7AF87F3854F270AC5D6536637C17E\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SF:/Escuela/SERGIO/Progra 3/Parcial3/glfw-3.3.8" "-BF:/Escuela/SERGIO/Progra 3/Parcial3/glfw-3.3.8/constrc" --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file "F:/Escuela/SERGIO/Progra 3/Parcial3/glfw-3.3.8/constrc/GLFW.sln"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="F:\Escuela\SERGIO\Progra 3\Parcial3\glfw-3.3.8\tests\gamma.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F:\Escuela\SERGIO\Progra 3\Parcial3\glfw-3.3.8\deps\glad_gl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="F:\Escuela\SERGIO\Progra 3\Parcial3\glfw-3.3.8\deps\glad\gl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="F:\Escuela\SERGIO\Progra 3\Parcial3\glfw-3.3.8\tests\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{08C6E4AE-B22E-34C0-9509-6C03C7429E38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{8161260B-606D-38D1-BE79-102D1D65A464}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

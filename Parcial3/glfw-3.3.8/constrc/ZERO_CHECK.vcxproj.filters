@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="F:\Escuela\SERGIO\Progra 3\Parcial3\glfw-3.3.8\constrc\CMakeFiles\fbe7af87f3854f270ac5d6536637c17e\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="F:\Escuela\SERGIO\Progra 3\Parcial3\glfw-3.3.8\cmake_uninstall.cmake.in">
+      <Filter>Buildsystem Input Files</Filter>
+    </None>
+    <None Include="F:\Escuela\SERGIO\Progra 3\Parcial3\glfw-3.3.8\examples\CMakeLists.txt">
+      <Filter>Buildsystem Input Files\examples</Filter>
+    </None>
+    <None Include="F:\Escuela\SERGIO\Progra 3\Parcial3\glfw-3.3.8\src\CMakeLists.txt">
+      <Filter>Buildsystem Input Files\src</Filter>
+    </None>
+    <None Include="F:\Escuela\SERGIO\Progra 3\Parcial3\glfw-3.3.8\src\glfw3.pc.in">
+      <Filter>Buildsystem Input Files\src</Filter>
+    </None>
+    <None Include="F:\Escuela\SERGIO\Progra 3\Parcial3\glfw-3.3.8\src\glfw3Config.cmake.in">
+      <Filter>Buildsystem Input Files\src</Filter>
+    </None>
+    <None Include="F:\Escuela\SERGIO\Progra 3\Parcial3\glfw-3.3.8\src\glfw_config.h.in">
+      <Filter>Buildsystem Input Files\src</Filter>
+    </None>
+    <None Include="F:\Escuela\SERGIO\Progra 3\Parcial3\glfw-3.3.8\tests\CMakeLists.txt">
+      <Filter>Buildsystem Input Files\tests</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{F1626B99-9C9A-3D0B-9458-27A930E145AF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{08C6E4AE-B22E-34C0-9509-6C03C7429E38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Buildsystem Input Files">
+      <UniqueIdentifier>{1DB91BFF-0F69-35AB-BDB7-8A38384A49EF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Buildsystem Input Files\examples">
+      <UniqueIdentifier>{5A18DE2A-53C7-3E91-B4AD-3760A05CB583}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Buildsystem Input Files\src">
+      <UniqueIdentifier>{D6836FBD-F24B-3DAC-B4DA-65A42F0340E4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Buildsystem Input Files\tests">
+      <UniqueIdentifier>{CC97C3F4-175A-3120-BB81-57AB1CC0C2D4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
