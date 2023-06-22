@@ -1,0 +1,247 @@
+#include <iostream>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <cmath>
+#include "stb_image.h"
+
+using namespace std;
+
+// Función de devolución de llamada para cambiar el tamaño del framebuffer
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
+}
+
+const char* vertexShaderSource = R"(
+    #version 330 core
+    layout (location = 0) in vec3 aPos;
+    layout (location = 1) in vec2 aTexCoord;
+
+    out vec2 TexCoord;
+
+    uniform mat4 transform;
+
+    void main()
+    {
+        gl_Position = transform * vec4(aPos, 1.0);
+        TexCoord = aTexCoord;
+    }
+)";
+
+const char* fragmentShaderSource = R"(
+    #version 330 core
+    in vec2 TexCoord;
+    out vec4 FragColor;
+
+    uniform sampler2D texture1;
+
+    void main()
+    {
+        FragColor = texture(texture1, TexCoord);
+    }
+)";
+
+int main() {
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    GLFWwindow* window = glfwCreateWindow(800, 800, "VENTANA JUEGO", NULL, NULL);
+    if (window == NULL) {
+        cout << "Failed to create GLFW window" << endl;
+        glfwTerminate();
+        return -1;
+    }
+
+    glfwMakeContextCurrent(window);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        cout << "Failed to initialize GLAD" << endl;
+        return -1;
+    }
+
+    // Compilar el vertex shader
+    unsigned int vertexShader;
+    vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+    glCompileShader(vertexShader);
+
+    // Comprobar errores de compilación del vertex shader
+    int success;
+    char infoLog[512];
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+        cout << "Error al compilar el vertex shader: " << infoLog << endl;
+    }
+
+    // Compilar el fragment shader
+    unsigned int fragmentShader;
+    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    glCompileShader(fragmentShader);
+
+    // Comprobar errores de compilación del fragment shader
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+        cout << "Error al compilar el fragment shader: " << infoLog << endl;
+    }
+
+    // Crear el programa de shader
+    unsigned int shaderProgram;
+    shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+
+    // Comprobar errores de enlace del programa de shader
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    if (!success) {
+        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+        cout << "Error al enlazar el programa de shader: " << infoLog << endl;
+    }
+
+    // Eliminar los shaders una vez que se han enlazado al programa
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    // Coordenadas y vértices del cubo
+    float vertices[] = {
+        // Cara frontal
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // Inferior izquierdo
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // Inferior derecho
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // Superior derecho
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, // Superior izquierdo
+        // Cara trasera
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // Inferior izquierdo
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f, // Inferior derecho
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // Superior derecho
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f  // Superior izquierdo
+    };
+
+    // Índices de los triángulos que forman el cubo
+    unsigned int indices[] = {
+        0, 1, 2,    // Primer triángulo (cara frontal)
+        2, 3, 0,    // Segundo triángulo (cara frontal)
+        4, 5, 6,    // Tercer triángulo (cara trasera)
+        6, 7, 4,    // Cuarto triángulo (cara trasera)
+        0, 3, 7,    // Quinto triángulo (lado izquierdo)
+        7, 4, 0,    // Sexto triángulo (lado izquierdo)
+        1, 2, 6,    // Séptimo triángulo (lado derecho)
+        6, 5, 1,    // Octavo triángulo (lado derecho)
+        3, 2, 6,    // Noveno triángulo (lado superior)
+        6, 7, 3,    // Décimo triángulo (lado superior)
+        0, 1, 5,    // Undécimo triángulo (lado inferior)
+        5, 4, 0     // Duodécimo triángulo (lado inferior)
+    };
+
+    // Crear los objetos de Vertex Buffer y Element Buffer
+    unsigned int VBO, EBO;
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    // Crear y enlazar el Vertex Array Object (VAO)
+    unsigned int VAO;
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
+    // Enlazar el Vertex Buffer Object (VBO)
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    // Enlazar el Element Buffer Object (EBO)
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    // Especificar los atributos de los vértices
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // Especificar los atributos de las coordenadas de textura
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    // Desenlazar el VAO
+    glBindVertexArray(0);
+
+    // Establecer la velocidad de rotación
+    float rotationSpeed = 0.5f;
+
+    // Cargar la textura
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    // Establecer los parámetros de la textura
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Cargar la imagen de la textura
+    int width, height, channels;
+    string path = "caja.jpg";
+    const char* pathChar = &path[0];
+    stbi_set_flip_vertically_on_load(true);
+    unsigned char* ndata = stbi_load("caja.jpg", &width, &height, &channels, 0);
+    unsigned char* data = ndata;
+    if (data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+        cout << "IMAGEN LISTA" << endl;
+    }
+    else {
+        cout << "Failed to load texture" << endl;
+    }
+    stbi_image_free(data);
+
+    // Bucle principal
+    while (!glfwWindowShouldClose(window)) {
+        // Actualizar lógica del juego
+
+        // Renderizar
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        glUseProgram(shaderProgram);
+
+        // Obtener la ubicación de la transformación en el shader
+        int transformLoc = glGetUniformLocation(shaderProgram, "transform");
+
+        // Incrementar el ángulo de rotación
+        float angle = static_cast<float>(glfwGetTime()) * rotationSpeed;
+
+
+        // Matriz de rotación
+        float cosAngle = cos(angle);
+        float sinAngle = sin(angle);
+
+        float rotationMatrix[16] = {
+            cosAngle, 0.0f, -sinAngle, 0.0f,
+            0.0f, 1.0f, 0.0f, 0.0f,
+            sinAngle, 0.0f, cosAngle, 0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        };
+
+        // Pasar la matriz de transformación al shader
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, rotationMatrix);
+
+
+        glBindVertexArray(VAO);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    // Limpiar recursos
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+
+    glfwTerminate();
+    return 0;
+}
